@@ -18,10 +18,6 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import Fonts from '../../theme/Fonts';
 
 export default function Home({navigation}) {
-  useEffect(() => {
-    console.log(state);
-  }, []);
-
   const data = [
     {quarter: 'Apr 1', earnings: 13000},
     {quarter: 'Apr 2', earnings: 16500},
@@ -29,11 +25,66 @@ export default function Home({navigation}) {
     {quarter: 'Apr 4', earnings: 19000},
   ];
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(null);
-  const [items, setItems] = useState([
-    {label: 'Apple', value: 'apple'},
-    {label: 'Banana', value: 'banana'},
-  ]);
+  const [axiosData, setAxiosData] = useState('');
+  const [list, setList] = useState(false);
+  const [items, setItems] = useState(state);
+  const [value, setValue] = useState(items[12].value);
+  const arrayOfObj = Object.entries(axiosData).map(e => ({[e[0]]: e[1]}));
+
+  useEffect(() => {
+    getAxiosData();
+  }, []);
+
+  const getAxiosData = async () => {
+    var axios = require('axios');
+
+    var config = {
+      method: 'get',
+      url: 'https://api.covid19india.org/state_district_wise.json',
+      headers: {},
+    };
+
+    axios(config)
+      .then(function (response) {
+        const arrayOfObj = Object.entries(response.data).map(e => ({
+          [e[0]]: e[1],
+        }));
+        setAxiosData(arrayOfObj);
+        // console.log(JSON.stringify(response.data));
+        // console.log(JSON.stringify(arrayOfObj[17].Kerala));
+
+        // response.data.map(item => console.log('item', item[0]));
+        // console.log(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
+  const renderItem = ({item, index}) => {
+    console.log('Item', item);
+    return (
+      <View
+        style={{
+          height: 120,
+          width: 160,
+          backgroundColor: '#fff',
+          marginTop: 20,
+          flexDirection: 'row',
+          marginLeft: 10,
+        }}>
+        <Text
+          style={{
+            fontSize: 20,
+            color: 'black',
+            fontFamily: 'Teko-Bold',
+          }}>
+          {item}
+        </Text>
+      </View>
+    );
+  };
+
   return (
     // <Modal
     //   style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
@@ -99,11 +150,12 @@ export default function Home({navigation}) {
           listMode="MODAL"
           open={open}
           value={value}
-          items={state}
+          items={items}
           setOpen={setOpen}
           setValue={setValue}
           setItems={setItems}
-          style={{width: 120, marginLeft: 90}}
+          theme="DARK"
+          style={{width: 140, marginLeft: 90}}
         />
       </View>
       <View
@@ -131,7 +183,7 @@ export default function Home({navigation}) {
               marginTop: 10,
               fontFamily: Fonts.light,
             }}>
-            Affected
+            Active
           </Text>
           <Text
             style={{
@@ -142,7 +194,8 @@ export default function Home({navigation}) {
               marginTop: 10,
               fontFamily: Fonts.light,
             }}>
-            99
+            {/* {arrayOfObj[0].Kerala.districtData.arrayOfObj['Other State'].active} */}
+            {/* {arrayOfObj[10]} */}
           </Text>
         </View>
         <View
@@ -161,7 +214,7 @@ export default function Home({navigation}) {
               marginTop: 10,
               fontFamily: Fonts.light,
             }}>
-            Death
+            Confirmed
           </Text>
           <Text
             style={{
@@ -201,7 +254,7 @@ export default function Home({navigation}) {
               marginTop: 10,
               fontFamily: Fonts.light,
             }}>
-            Recovered
+            Deceased
           </Text>
           <Text
             style={{
@@ -231,7 +284,7 @@ export default function Home({navigation}) {
               marginTop: 10,
               fontFamily: Fonts.light,
             }}>
-            Active
+            Recovered
           </Text>
           <Text
             style={{
@@ -278,7 +331,7 @@ export default function Home({navigation}) {
       </View>
       <View
         style={{
-          height: 320,
+          height: 200,
           backgroundColor: '#131053',
           justifyContent: 'center',
           flexDirection: 'row',
@@ -292,26 +345,34 @@ export default function Home({navigation}) {
           />
         </VictoryChart>
       </View>
-      <View style={{backgroundColor: '#fff', height: 90, flexDirection: 'row'}}>
+      <View
+        style={{backgroundColor: '#131053', height: 90, flexDirection: 'row'}}>
         <FlatList
-          data={[{}, {}, {}, {}, {}]}
-          // numColumns={3}
+          data={arrayOfObj}
           horizontal={true}
-          renderItem={({item, index}) => (
-            <View
-              style={{
-                height: 120,
-                width: 160,
-                backgroundColor: '#fff',
-                marginTop: 20,
-                flexDirection: 'row',
-              }}>
-              <Text
-                style={{fontSize: 20, color: 'black', fontFamily: 'Teko-Bold'}}>
-                Demo
-              </Text>
-            </View>
-          )}></FlatList>
+          // keyExtractor={item=>item.}
+          // renderItem={({item, index}) => (
+          //   <View
+          //     style={{
+          //       height: 120,
+          //       width: 160,
+          //       backgroundColor: '#fff',
+          //       marginTop: 20,
+          //       flexDirection: 'row',
+          //       marginLeft: 10,
+          //     }}>
+          //     <Text
+          //       style={{
+          //         fontSize: 20,
+          //         color: 'black',
+          //         fontFamily: 'Teko-Bold',
+          //       }}>
+          //       {/* demo{item.districtData.Nicobars.notes} */}
+          //     </Text>
+          //   </View>
+          // )}
+          renderItem={renderItem}
+        />
       </View>
     </View>
   );

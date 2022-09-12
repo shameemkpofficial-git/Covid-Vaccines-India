@@ -1,4 +1,4 @@
-let state = [
+const state = [
   {label: 'Andhra Pradesh', value: 'Andhra Pradesh'},
   {label: 'Arunachal Pradesh', value: 'Arunachal Pradesh'},
   {label: 'Assam', value: 'Assam'},
