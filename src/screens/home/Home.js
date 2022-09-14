@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import ChangeUrl from '@components/ChangeUrl';
 import DropDownPicker from 'react-native-dropdown-picker';
+import RNPickerSelect from 'react-native-picker-select'
 import Fonts from '../../theme/Fonts';
 
 export default function Home({navigation}) {
