@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import ChangeUrl from '@components/ChangeUrl';
 import DropDownPicker from 'react-native-dropdown-picker';
+import RNPickerSelect from 'react-native-picker-select'
 import Fonts from '../../theme/Fonts';
 
 export default function Home({navigation}) {
@@ -28,140 +29,92 @@ export default function Home({navigation}) {
   const [axiosData, setAxiosData] = useState('');
   const [list, setList] = useState(false);
   const [items, setItems] = useState(state);
-  const [value, setValue] = useState(items[12].value);
-  const arrayOfObj = Object.entries(axiosData).map(e => ({[e[0]]: e[1]}));
+  const [value, setValue] = useState('Kerala');
+  const [selectedStateData, setselectedStateData] = useState({
+    state: '',
+    state_code: '',
+    total_doses: 0,
+    total_vaccinated: 0,
+    total_fully_vaccinated: 0,
+    population: 0,
+    last_updated: '',
+    ref: '',
+  });
 
   useEffect(() => {
-    getAxiosData();
-  }, []);
+    getStateData(value);
+  }, [value]);
 
-  const getAxiosData = async () => {
+  const getStateData = async statename => {
     var axios = require('axios');
 
     var config = {
       method: 'get',
-      url: 'https://api.covid19india.org/state_district_wise.json',
+      url: 'https://india-covid19vaccine.github.io/api/state_latest.json',
       headers: {},
     };
 
     axios(config)
       .then(function (response) {
-        const arrayOfObj = Object.entries(response.data).map(e => ({
-          [e[0]]: e[1],
-        }));
-        setAxiosData(arrayOfObj);
-        // console.log(JSON.stringify(response.data));
-        // console.log(JSON.stringify(arrayOfObj[17].Kerala));
+        console.log('STATE DATA', response.data);
+        response.data.map(item => {
+          console.log('Selected State Name', statename);
 
-        // response.data.map(item => console.log('item', item[0]));
-        // console.log(response.data);
+          if (item.state === statename) {
+            console.log('Selected state', item);
+            setselectedStateData(item);
+          }
+        });
       })
       .catch(function (error) {
         console.log(error);
       });
   };
 
-  const renderItem = ({item, index}) => {
-    console.log('Item', item);
-    return (
-      <View
-        style={{
-          height: 120,
-          width: 160,
-          backgroundColor: '#fff',
-          marginTop: 20,
-          flexDirection: 'row',
-          marginLeft: 10,
-        }}>
-        <Text
-          style={{
-            fontSize: 20,
-            color: 'black',
-            fontFamily: 'Teko-Bold',
-          }}>
-          {item}
-        </Text>
-      </View>
-    );
-  };
-
   return (
-    // <Modal
-    //   style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
-    //   transparent={true}
-    //   visible={updateUrlModal}
-    //   animationType="fade">
-    //   <ChangeUrl onClose={() => setCloseModal(false)}/>
-    // </Modal>
-    <View style={{flex: 1, backgroundColor: '#131053', zIndex: 1}}>
-      {/* <View style={{height:40,backgroundColor:'#131053', borderRadius:20, flexDirection:'row', justifyContent:'space-between', marginHorizontal:10, marginTop:10}}>
-                  <IconPack iconName="menu" pack="Entypo" iconColor="#fff" iconSize={30} />
-                  <IconPack iconName="bells" pack="AntDesign" iconColor="#fff" iconSize={30}/>       
-            </View> */}
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: '#181818',
+        zIndex: 1,
+      }}>
       <View
         style={{
           height: 40,
-          backgroundColor: '#131053',
-          marginHorizontal: 10,
+          backgroundColor: '#181818',
+          marginHorizontal: 20,
           marginTop: 10,
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
-        <Text
-          style={{
-            color: '#fff',
-            fontSize: 24,
-            // fontWeight: '500',
-            fontFamily: Fonts.light,
-          }}>
-          Covid 19 India
-        </Text>
-        {/* <Dropdown
-          style={{
-            marginLeft: 30,
-            height: 50,
-            borderBottomColor: '#fff',
-            borderBottomWidth: 0.5,
-            width: 150,
-          }}
-          placeholderStyle={{fontSize: 16, color: '#fff'}}
-          selectedTextStyle={{fontSize: 16, color: '#fff'}}
-          inputSearchStyle={{height: 40, fontSize: 16}}
-          iconStyle={{marginRight: 5}}
-          data={data2}
-          search
-          maxHeight={300}
-          valueField="Value"
-          placeholder="Select State"
-          value={value}
-          onFocus={() => setIsFocus(true)}
-          labelField="label"
-          onBlur={() => setIsFocus(false)}
-          onChange={item => {
-            console.log(item);
-            setValue(item.value);
-          }}></Dropdown> */}
-        <DropDownPicker
-          // style={{zIndex: 999}}
-          // zIndex={1000}
-          // zIndexInverse={5000}
-          // zIndex={199}
-          // zIndex={1}
-          listMode="MODAL"
-          open={open}
-          value={value}
-          items={items}
-          setOpen={setOpen}
-          setValue={setValue}
-          setItems={setItems}
-          theme="DARK"
-          style={{width: 140, marginLeft: 90}}
-        />
+        <View>
+          <Text
+            style={{
+              color: '#fff',
+              fontSize: 24,
+              fontFamily: Fonts.light,
+            }}>
+            Covid-19 Vaccin
+          </Text>
+        </View>
+        <View>
+          <DropDownPicker
+            listMode="MODAL"
+            open={open}
+            value={value}
+            items={items}
+            setOpen={setOpen}
+            setValue={setValue}
+            setItems={setItems}
+            theme="LIGHT"
+            style={{width: 140}}
+          />
+        </View>
       </View>
       <View
         style={{
           height: 120,
-          backgroundColor: '#131053',
+          backgroundColor: '#181818',
           marginTop: 30,
           marginHorizontal: 10,
           flexDirection: 'row',
@@ -170,145 +123,137 @@ export default function Home({navigation}) {
         <View
           style={{
             height: '100%',
-            backgroundColor: '#ebcc34',
-            width: 180,
+            backgroundColor: '#8758FF',
+            marginHorizontal: 10,
+            flex: 1,
             borderRadius: 20,
           }}>
           <Text
             style={{
               fontSize: 20,
-              // fontWeight: '700',
               color: '#fff',
               textAlign: 'center',
               marginTop: 10,
               fontFamily: Fonts.light,
             }}>
-            Active
+            Total Vaccinated
           </Text>
           <Text
             style={{
               fontSize: 20,
-              // fontWeight: '700',
               color: '#fff',
               textAlign: 'center',
               marginTop: 10,
               fontFamily: Fonts.light,
             }}>
-            {/* {arrayOfObj[0].Kerala.districtData.arrayOfObj['Other State'].active} */}
-            {/* {arrayOfObj[10]} */}
+            {selectedStateData.total_vaccinated}
           </Text>
         </View>
         <View
           style={{
             height: '100%',
-            backgroundColor: 'red',
-            width: 180,
+            backgroundColor: '#8758FF',
+            flex: 1,
             borderRadius: 20,
+            marginHorizontal: 10,
           }}>
           <Text
             style={{
               fontSize: 20,
-              // fontWeight: '700',
               color: '#fff',
               textAlign: 'center',
               marginTop: 10,
               fontFamily: Fonts.light,
             }}>
-            Confirmed
+            Total Doses
           </Text>
           <Text
             style={{
               fontSize: 20,
-              // fontWeight: '700',
               color: '#fff',
               textAlign: 'center',
               marginTop: 10,
               fontFamily: Fonts.light,
             }}>
-            99
+            {selectedStateData.total_doses}
           </Text>
         </View>
       </View>
       <View
         style={{
           height: 120,
-          backgroundColor: '#131053',
+          backgroundColor: '#181818',
           marginTop: 30,
-          marginHorizontal: 10,
+          marginHorizontal: 20,
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
         <View
           style={{
             height: '100%',
-            backgroundColor: 'green',
+            backgroundColor: '#5CB8E4',
             width: 110,
             borderRadius: 20,
           }}>
           <Text
             style={{
               fontSize: 20,
-              // fontWeight: '700',
               color: '#fff',
               textAlign: 'center',
               marginTop: 10,
               fontFamily: Fonts.light,
             }}>
-            Deceased
+            Population
           </Text>
           <Text
             style={{
               fontSize: 20,
-              // fontWeight: '700',
               color: '#fff',
               textAlign: 'center',
               marginTop: 10,
               fontFamily: Fonts.light,
             }}>
-            99
+            {selectedStateData.population}
           </Text>
         </View>
         <View
           style={{
             height: '100%',
-            backgroundColor: 'darkcyan',
+            backgroundColor: '#5CB8E4',
             width: 110,
             borderRadius: 20,
           }}>
           <Text
             style={{
               fontSize: 20,
-              // fontWeight: '700',
               color: '#fff',
               textAlign: 'center',
               marginTop: 10,
               fontFamily: Fonts.light,
             }}>
-            Recovered
+            State Code
           </Text>
           <Text
             style={{
               fontSize: 20,
-              // fontWeight: '700',
               color: '#fff',
               textAlign: 'center',
               marginTop: 10,
               fontFamily: Fonts.light,
             }}>
-            99
+            {selectedStateData.state_code}
           </Text>
         </View>
         <View
           style={{
             height: '100%',
-            backgroundColor: 'darkblue',
+            backgroundColor: '#5CB8E4',
             width: 110,
             borderRadius: 20,
           }}>
           <Text
             style={{
               fontSize: 20,
-              // fontWeight: '700',
               color: '#fff',
               textAlign: 'center',
               marginTop: 10,
@@ -319,7 +264,6 @@ export default function Home({navigation}) {
           <Text
             style={{
               fontSize: 20,
-              // fontWeight: '700',
               color: '#fff',
               textAlign: 'center',
               marginTop: 10,
@@ -332,47 +276,18 @@ export default function Home({navigation}) {
       <View
         style={{
           height: 200,
-          backgroundColor: '#131053',
+          backgroundColor: '#181818',
           justifyContent: 'center',
           flexDirection: 'row',
         }}>
-        <VictoryChart height={300} width={300} theme={VictoryTheme.material}>
+        {/* <VictoryChart height={300} width={300} theme={VictoryTheme.material}>
           <VictoryBar
             data={data}
             x="quarter"
             y="earnings"
             style={{data: {fill: '#ff0000'}}}
           />
-        </VictoryChart>
-      </View>
-      <View
-        style={{backgroundColor: '#131053', height: 90, flexDirection: 'row'}}>
-        <FlatList
-          data={arrayOfObj}
-          horizontal={true}
-          // keyExtractor={item=>item.}
-          // renderItem={({item, index}) => (
-          //   <View
-          //     style={{
-          //       height: 120,
-          //       width: 160,
-          //       backgroundColor: '#fff',
-          //       marginTop: 20,
-          //       flexDirection: 'row',
-          //       marginLeft: 10,
-          //     }}>
-          //     <Text
-          //       style={{
-          //         fontSize: 20,
-          //         color: 'black',
-          //         fontFamily: 'Teko-Bold',
-          //       }}>
-          //       {/* demo{item.districtData.Nicobars.notes} */}
-          //     </Text>
-          //   </View>
-          // )}
-          renderItem={renderItem}
-        />
+        </VictoryChart> */}
       </View>
     </View>
   );
